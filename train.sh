@@ -1,5 +1,5 @@
 python train.py \
---config=config/gated_transformer/final_gated_transformer-small.yml \
+--config=config/paa_transformer/paa_transformer-small.yml \
 --dataset=convai2 \
 --lr=1e-6 \
 --gated=yes \

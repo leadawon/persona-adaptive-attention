@@ -2,3 +2,7 @@
 /data/ConvAI2/valid_self_original.txt
 bigdata/
 downloaded_LM/
+dawon_bart/bigdata/
+save_models/
+generated_text/
+cache/
