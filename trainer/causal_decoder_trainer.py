@@ -15,6 +15,9 @@ from utils.save_load_model import save_model, load_model
 import os
 from torch import nn
 
+#dawon custom
+from pprint import pprint
+
 
 def train_one_epoch(causal_decoder_model, optimizer, scheduler, train_dataloader, tokenizer, config, device,
                     prefix_message=''):
@@ -24,7 +27,14 @@ def train_one_epoch(causal_decoder_model, optimizer, scheduler, train_dataloader
     pbar = tqdm(train_dataloader, total=train_dataloader.__len__())
     pbar.set_description(prefix_message)
     losses = []
+    # dawon custom
+    #for td in train_dataloader:
+        #print(type(td))
+    #assert False
+    #print("is it ok?")
+    
     for input_data in pbar:
+        
         causal_decoder_model.train()
         optimizer.zero_grad()
         logits, _cls = causal_decoder_model(input_data=input_data,
@@ -101,15 +111,29 @@ def train(config, device, load_percent, init_path=None):
     train_dataset = PersonaChatDataset(config.dataset.train, tokenizer.sep_token, max_context_turns=max_context_turns,
                                        add_persona_indicator=add_persona_indicator,
                                        add_role_indicator=add_role_indicator,
-                                       load_percent=load_percent, extend_candidates=config.training.extend_candidates, num_candidates=config.training.num_candidates)
+                                       load_percent=load_percent, extend_candidates=config.training.extend_candidates, num_candidates=config.training.num_candidates, dawon_flag="train")
+    #dawon custom 
+    # dict_keys(['persona', 'query_array', 'query', 'persona_list', 'persona_query', 'target', 'candidates_list', 'ID', 'is_candidate'])
+    #
+    #custom_key = 'is_candidate'
+    #print(len(train_dataset[15][custom_key]))
+    #print(train_dataset[131])
+    #print("-"*50)
+    #print(len(train_dataset[16][custom_key]))
+    #print(train_dataset[132])
+
+    #for i in range(18):
+        #print(tokenizer(train_dataset[0]['persona_list']))
+    
+    #assert False
     train_dataloader = get_dataloader(train_dataset, tokenizer, config, shuffle=False, num_workers=num_workers)
     valid_dataset = PersonaChatDataset(config.dataset.valid, tokenizer.sep_token, max_context_turns=max_context_turns,
                                        add_persona_indicator=add_persona_indicator,
-                                       add_role_indicator=add_role_indicator)
+                                       add_role_indicator=add_role_indicator,dawon_flag="valid")
     valid_dataloader = get_dataloader(valid_dataset, tokenizer, config, num_workers=num_workers, batch_size_ratio=1)
     test_dataset = PersonaChatDataset(config.dataset.test, tokenizer.sep_token, max_context_turns=max_context_turns,
                                       add_persona_indicator=add_persona_indicator,
-                                      add_role_indicator=add_role_indicator)
+                                      add_role_indicator=add_role_indicator,dawon_flag="valid")
     test_dataloader = get_dataloader(test_dataset, tokenizer, config, num_workers=num_workers, batch_size_ratio=1)
     # initialize encoder decoder
     model = get_model_via_config(config, tokenizer)

@@ -13,13 +13,16 @@ from utils.get_tokenizer import get_tokenizer
 from utils.parser_helper import str2bool
 from utils.save_load_model import load_model
 
+import time
+import re
+
 
 def save_generated_text(result_str, ground_truth, predicted, exp_name, force_acc_auto_tau, temperature, history_texts,prefix=None ):
     assert len(ground_truth) == len(predicted), 'length must equal!'
     text = result_str + "\n" + "=" * 10 + "\n"
     for gt, pred,his in zip(ground_truth, predicted,history_texts):
-        text += "History    : {}\n".format(type(his))
-        text += "GroundTruth: {}\n".format(gt)
+        text += "History    :\n{}\n\n".format(re.sub(r' \[SEP\] ','\n',his))
+        text += "GroundTruth: {}\n\n".format(gt)
         text += "Prediction : {}\n".format(pred)
         text += "=" * 10 + "\n"
     folder = "generated_text/test"
@@ -48,8 +51,10 @@ from glob import glob
 args = parser.parse_args()
 force_acc_auto_tau = args.force_acc_auto_tau
 temperature = args.temperature
-MAX_BATCH_SIZE = args.max_bz * 2
-MIN_BATCH_SIZE = args.min_bz * 2
+MAX_BATCH_SIZE = args.max_bz
+MIN_BATCH_SIZE = args.min_bz
+# MAX_BATCH_SIZE = 4
+# MIN_BATCH_SIZE = 4
 if MAX_BATCH_SIZE < MIN_BATCH_SIZE:
     MAX_BATCH_SIZE = MIN_BATCH_SIZE
 mdir = args.mdir
@@ -87,15 +92,37 @@ for model_path in model_paths:
     preds_texts = []
     history_texts = []
     pbar = tqdm(test_dataloader, desc='decoding tokens')
+    
+    #dawoncnt = 0
+    
     for data in pbar:
         pred_text = model.generate(data)
         target = data['target_input']['input_ids']
         target_text = tokenizer.batch_decode(cut_special_tokens(target, tokenizer))
-        history_texts += data
+        history_texts += data["persona_query"]
         preds_texts += pred_text
         target_texts += target_text
         pbar.set_postfix_str(pred_text[0])
-
+#         for k,v in data.items():
+#             print("*"*10)
+#             print(k)
+#             print(v)
+#         #print(data["query"])
+#         #print(len(data["persona"]))
+#         #print(tokenizer.batch_decode(cut_special_tokens(data["persona"], tokenizer)))
+#         print("data"*10)
+#         print(len(pred_text))
+#         print("pred_text"*10)
+#         dawoncnt+= 1
+#         if dawoncnt == 1:
+#             break
+    
+    assert len(history_texts) == len(preds_texts)
+#     print(history_texts[0])
+#     print("his"*10)
+#     print(preds_texts[0])
+#     print("preds"*10)
+    
     dist1, dist2, avg_dist = eval_distinct_avg(preds_texts)
     result_str = """
     dist1: {}

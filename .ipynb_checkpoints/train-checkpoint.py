@@ -12,6 +12,8 @@ import torch
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+os.environ["CUDA_VISIBLE_DEVICES"]="3"
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--config')
@@ -56,11 +58,18 @@ parser.add_argument('--max_context_turns', type=int, default=None)
 parser.add_argument('--persona_alpha', type=float, default=None)
 
 # dawon custom
-# parser.add_argument('--btn_count',type=int,default=None)
-# parser.add_argument('--btn_fuse_layer',type=int,default=None)
+parser.add_argument('--btn_count',type=int,default=None)
+parser.add_argument('--btn_fuse_layer',type=int,default=None)
+
 
 
 args = parser.parse_args()
+
+#dawon custom -> TODO: 지울것
+#args.epoch = 1
+args.batch = 8
+#dawon custom <-
+
 config_path = args.config
 batch_size = args.batch
 lr = args.lr

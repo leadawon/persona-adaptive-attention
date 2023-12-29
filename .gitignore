@@ -6,3 +6,5 @@ dawon_bart/bigdata/
 save_models/
 generated_text/
 cache/
+runs/
+data/
