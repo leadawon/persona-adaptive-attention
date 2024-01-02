@@ -84,7 +84,7 @@ for model_path in model_paths:
     config = extend_compatibility_for_paa_transformer(config)
     tokenizer = get_tokenizer(config.tokenizer.vocab)
     max_context_turns = config.dataset.max_context_turns
-    test_dataset = PersonaChatDataset(config.dataset.test, tokenizer.sep_token, max_context_turns=max_context_turns)
+    test_dataset = PersonaChatDataset(config.dataset.test, tokenizer.sep_token, max_context_turns=max_context_turns,dawon_flag="test")
     test_dataloader = get_dataloader(test_dataset, tokenizer, config, num_workers=args.worker, batch_size_ratio=1)
     model = get_model_via_config(config, tokenizer)
     model.to('cuda')

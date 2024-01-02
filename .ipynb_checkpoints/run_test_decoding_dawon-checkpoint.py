@@ -1,5 +1,6 @@
 import argparse
 import os
+os.environ["CUDA_VISIBLE_DEVICES"]="3"
 
 import torch
 from tqdm import tqdm
