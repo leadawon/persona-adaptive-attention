@@ -43,8 +43,11 @@ def train_one_epoch(causal_decoder_model, optimizer, scheduler, train_dataloader
                                             persona_query_input=input_data['persona_query_input'].to(device),
                                             target_input=input_data['target_input'].to(device),
                                             )
+        assert False, "for safety"
         logits = logits[:, :-1, :]  # we ignore [EOS] -> [PAD] here
-        if config.paa_transformer.decoder.double_heads:
+        
+
+        if config.paa_transformer.decoder.double_heads: # FALSE
             revised_input_ids = []
             is_candidates = input_data['is_candidate']
             for index in range(input_data['target_input']['input_ids'].shape[0]):
@@ -136,6 +139,7 @@ def train(config, device, load_percent, init_path=None):
                                       add_role_indicator=add_role_indicator,dawon_flag="valid")
     test_dataloader = get_dataloader(test_dataset, tokenizer, config, num_workers=num_workers, batch_size_ratio=1)
     # initialize encoder decoder
+
     model = get_model_via_config(config, tokenizer)
     model.to(device)
     # default

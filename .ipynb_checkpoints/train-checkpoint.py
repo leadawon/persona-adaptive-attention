@@ -12,7 +12,7 @@ import torch
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-os.environ["CUDA_VISIBLE_DEVICES"]="3"
+os.environ["CUDA_VISIBLE_DEVICES"]="1"
 
 
 parser = argparse.ArgumentParser()
