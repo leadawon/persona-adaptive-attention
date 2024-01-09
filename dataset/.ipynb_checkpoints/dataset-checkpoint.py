@@ -79,6 +79,7 @@ class PersonaChatDataset(torch.utils.data.Dataset):
                             for k,v in dic.items():
                                 if len(v) == 0:
                                     break
+
                                 if len(dic['persona'] + dic['input_str']) > 2048:
                                     #print('long data detected!')
                                     break

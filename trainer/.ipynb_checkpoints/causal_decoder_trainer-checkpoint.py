@@ -43,7 +43,8 @@ def train_one_epoch(causal_decoder_model, optimizer, scheduler, train_dataloader
                                             persona_query_input=input_data['persona_query_input'].to(device),
                                             target_input=input_data['target_input'].to(device),
                                             )
-        assert False, "for safety"
+        #dawon custom
+        #assert False, "for safety"
         logits = logits[:, :-1, :]  # we ignore [EOS] -> [PAD] here
         
 

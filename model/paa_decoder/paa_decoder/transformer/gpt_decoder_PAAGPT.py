@@ -515,6 +515,7 @@ class GPT2Block(nn.Module):
                     torch.cat([hidden_states, persona_cross_attn_outputs[0]], -1)))
             else:
                 persona_alpha = torch.sigmoid(persona_cross_attn_outputs[0])
+
             if hasattr(self, 'fc_context_alpha'):
                 if self.gate_fc:
                     context_alpha = torch.sigmoid(self.fc_context_alpha(
@@ -530,7 +531,7 @@ class GPT2Block(nn.Module):
                     hidden_states = (1 - persona_alpha) * context_alpha_mask * residual + encoder_result
                 else:
                     hidden_states = residual + encoder_result
-
+        
             elif self.gated and self.fusion_mode == 'fc(cpr)':
                 assert self.customize_config.paa_transformer.decoder.add_persona_to_decoder, 'Must enable add_persona_to_decoder!'
                 context_alpha_mask = []
@@ -721,20 +722,27 @@ class GPT2Block(nn.Module):
                     hidden_states = (1 - persona_alpha) * context_alpha_mask * residual + encoder_result
                 else:
                     hidden_states = residual + encoder_result
-            elif self.gated and self.fusion_mode == '((pr)(cr))':
+            elif self.gated and self.fusion_mode == '((pr)(cr))': #### 여기!!
                 persona_alpha_mask = []
                 context_alpha_mask = []
                 for index, persona_alpha_element in enumerate(persona_alpha):
+#                     dawon custom
+#                     print(index)
+#                     print(persona_alpha_element.shape)
+                    
                     if accurate_tau is not None:
                         tau = accurate_tau[index]
                     persona_mask = torch.where(persona_alpha_element > tau,
                                                torch.ones_like(persona_alpha_element),
                                                torch.zeros_like(persona_alpha_element))
+
                     persona_alpha_mask.append(persona_mask)
+                    
                     context_mask = torch.where(persona_alpha_element < 1 - tau,
                                                torch.ones_like(persona_alpha_element),
                                                torch.zeros_like(persona_alpha_element))
                     context_alpha_mask.append(context_mask)
+
                 persona_alpha_mask = torch.stack(persona_alpha_mask)
                 context_alpha_mask = torch.stack(context_alpha_mask)
                 encoder_result = persona_alpha * persona_alpha_mask * persona_cross_attn_outputs[0] \
